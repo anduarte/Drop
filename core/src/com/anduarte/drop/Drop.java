@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -14,6 +15,9 @@ public class Drop extends ApplicationAdapter {
 	private Texture bucketImage;
 	private Sound dropSound;
 	private Music rainMusic;
+
+    private OrthographicCamera camera;
+    private SpriteBatch batch;			// Special class used to draw 2D Images
 
 	@Override
 	public void create () {
@@ -28,7 +32,12 @@ public class Drop extends ApplicationAdapter {
         // start the playback of the background music immediately
         rainMusic.setLooping(true);
         rainMusic.play();
-        
+
+        // Creating the camera
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 800, 480);
+
+        batch = new SpriteBatch();
 	}
 
 	@Override
