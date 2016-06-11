@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 
 public class Drop extends ApplicationAdapter {
 	// load the assets and store a reference to them
@@ -65,5 +66,14 @@ public class Drop extends ApplicationAdapter {
         batch.begin();
         batch.draw(bucketImage, bucket.x, bucket.y);
         batch.end();
+
+        // Make the bucket move by touche/Mouse click
+        if (Gdx.input.isTouched()) {
+            Vector3 touchPos = new Vector3(); // In desktop there isn't a problem instantiate every time a new vector3 but in android we should use an instance class instead
+            // Convert the touch/mouse coordinates to camera's coordinate
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(touchPos); // Transform the coordinates to camera coordinate
+            bucket.x = touchPos.x - (64 / 2);
+        }
 	}
 }
