@@ -151,4 +151,19 @@ public class Drop extends ApplicationAdapter {
         raindrops.add(raindrop);
         lastDropTime = TimeUtils.nanoTime();
     }
+
+    @Override
+    /**
+     * Method that helps the SO to clean up when the user close the application
+     * It will dispose every textures, sounds and SpriteBatch
+     */
+    public void dispose() {
+        // Disposable are usually native resources which are not handled by the Java Garbage collector
+        // This is why we need to manually dispose of them
+        dropImage.dispose();
+        bucketImage.dispose();
+        dropSound.dispose();
+        rainMusic.dispose();
+        batch.dispose();
+    }
 }
