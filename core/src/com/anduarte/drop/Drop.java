@@ -9,8 +9,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
+
+import java.util.Iterator;
 
 public class Drop extends ApplicationAdapter {
 	// load the assets and store a reference to them
@@ -23,8 +28,11 @@ public class Drop extends ApplicationAdapter {
     private SpriteBatch batch;			// Special class used to draw 2D Images
 
     private Rectangle bucket;
+    private Array<Rectangle> raindrops; // LibGDX is a class util to be used instead of standard Java Collections
+                                        // The main difference is that minimizes garbage as much possible
+	private long lastDropTime;          // Keep track of the last time we spawned a raindrop
 
-	@Override
+    @Override
 	public void create () {
         // load the images for the droplet and the bucket, 64x64 pixels each
         dropImage = new Texture(Gdx.files.internal("droplet.png"));
@@ -49,6 +57,9 @@ public class Drop extends ApplicationAdapter {
         bucket.y = 20;                  // Position bottom of the screen
         bucket.width = 64;
         bucket.height = 64;
+
+        raindrops = new Array<Rectangle>();
+        spawnRainDrop();
 	}
 
 	@Override
@@ -66,6 +77,12 @@ public class Drop extends ApplicationAdapter {
         // Once we call the end() it will submit all drawing requests at once to OpenGL
         batch.begin();
         batch.draw(bucketImage, bucket.x, bucket.y);
+
+        // render the raindrops
+        for (Rectangle raindrop : raindrops) {
+            batch.draw(dropImage, raindrop.x, raindrop.y);
+        }
+
         batch.end();
 
         // Make the bucket move by touche/Mouse click
@@ -94,5 +111,44 @@ public class Drop extends ApplicationAdapter {
             bucket.x = 800 - 64;
         }
 
+        // It will check how much time has passed since we spawned a new raindrop
+        // and creates a new one if necessary
+        if (TimeUtils.nanoTime() - lastDropTime > 1000000000) {
+            spawnRainDrop();
+        }
+
+        // Move raindrops and remove it from the raindrops if goes of the bottom of the screen
+        Iterator<Rectangle> iterator = raindrops.iterator();
+        while (iterator.hasNext()) {
+            Rectangle raindrop = iterator.next();
+            raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
+
+            if(raindrop.y + 64 < 0) {
+                iterator.remove();
+            }
+
+            // If the raindrop hits the bucket playback the drop sound
+            // and remove the raindrop from the bucket
+            if (raindrop.overlaps(bucket)) { // Checks if the rectangle overlaps with another rectangle
+                dropSound.play();
+                iterator.remove();
+            }
+        }
+
+
 	}
+
+    /**
+     * Method which instantiates a new Rectangle(raindrop) sets it to a random position
+     * at the top edge of the screen and adds it to the raindrops array
+     */
+    private void spawnRainDrop() {
+        Rectangle raindrop = new Rectangle();
+        raindrop.x = MathUtils. random(0, 800 -64);
+        raindrop.y = 480;
+        raindrop.width = 64;
+        raindrop.height = 64;
+        raindrops.add(raindrop);
+        lastDropTime = TimeUtils.nanoTime();
+    }
 }
