@@ -186,8 +186,8 @@ public class GameScreen implements Screen {
 
     @Override
     /**
-     * Method that helps the SO to clean up when the user close the application
-     * It will dispose every textures, sounds and SpriteBatch
+     * Method that helps the SO to clean up when the user close the application.
+     * <p>It will dispose every textures, sounds and SpriteBatch
      */
     public void dispose() {
         // Disposable are usually native resources which are not handled by the Java Garbage collector
